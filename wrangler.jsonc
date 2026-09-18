@@ -5,6 +5,8 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "csharp-coding-questions",
   "compatibility_date": "2026-09-18",
+  // Keep the csharp-coding-questions.<account>.workers.dev address working as a backup.
+  "workers_dev": true,
   "assets": {
     "directory": "site"
   },
