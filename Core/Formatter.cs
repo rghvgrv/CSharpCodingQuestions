@@ -15,6 +15,7 @@ public static class Formatter
         double number => number.ToString("0.#####"),
         ITuple tuple => "(" + string.Join(", ", Enumerable.Range(0, tuple.Length).Select(i => Format(tuple[i]))) + ")",
         ListNode or TreeNode => value.ToString()!,
+        IDictionary dictionary => "{" + string.Join(", ", dictionary.Keys.Cast<object>().Select(key => $"{Format(key)}: {Format(dictionary[key])}")) + "}",
         IEnumerable items => "[" + string.Join(", ", items.Cast<object?>().Select(Format)) + "]",
         _ => value.ToString() ?? "",
     };
