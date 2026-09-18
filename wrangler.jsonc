@@ -1,10 +1,16 @@
 // Cloudflare deployment of the static site (static assets only, no server code).
-// Update the site:  dotnet run -- --export  then  npx wrangler deploy
+// Deployed automatically by .github/workflows/deploy.yml on every push to master.
+// Manual deploy:  dotnet run -- --export  then  npx wrangler deploy
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "csharp-coding-questions",
   "compatibility_date": "2026-09-18",
   "assets": {
     "directory": "site"
-  }
+  },
+  // Custom domains: Cloudflare creates the DNS records and HTTPS certificates.
+  "routes": [
+    { "pattern": "rghvgrv.live", "custom_domain": true },
+    { "pattern": "www.rghvgrv.live", "custom_domain": true }
+  ]
 }
