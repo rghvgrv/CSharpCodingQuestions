@@ -195,6 +195,11 @@ public static class SumOfArray
 
 Then run `dotnet run -- --check`.
 
+## Contributing
+
+Contributions are welcome: new questions, better explanations, bug fixes. See **[CONTRIBUTING.md](CONTRIBUTING.md)** for the setup, the question templates, the code style and the pull request checklist.
+Every pull request is built and checked automatically, and merged changes go live on the site automatically.
+
 ## UI development
 
 ```bash
