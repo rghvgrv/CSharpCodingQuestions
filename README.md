@@ -96,25 +96,30 @@ The command prints `198/198 passed` and exits with a non-zero code if anything i
 > **Windows tip:** if Smart App Control / Application Control blocks the newly built `CSharpCodingQuestions.exe`,
 > run the DLL instead: `dotnet bin/Debug/net10.0/CSharpCodingQuestions.dll` (add `--check` to verify).
 
-## Deploy to Cloudflare Pages (free, always online)
+## Deploy to Cloudflare (free, always online)
 
-Cloudflare Pages hosts static files, so export the site first. Every question runs once, and its result is saved as JSON next to the React app:
+**Live site:** https://csharp-coding-questions.gauravaashish1.workers.dev
+
+Cloudflare serves the app as a static site (Cloudflare Workers static assets, the successor of Cloudflare Pages), so export it first.
+Every question runs once, and its result is saved as JSON next to the React app. `wrangler.jsonc` tells Cloudflare to serve the `site` folder.
 
 ```bash
 dotnet build
 dotnet run -- --export          # writes the whole site to ./site (≈ 1 MB)
 npx wrangler login              # one time: sign in to Cloudflare in the browser
-npx wrangler pages deploy site --project-name csharp-coding-questions --branch main
+npx wrangler deploy             # uploads ./site
 ```
 
-The site is now live at `https://csharp-coding-questions.pages.dev`.
+To update the site later, run `dotnet run -- --export` and `npx wrangler deploy` again. Only changed files are uploaded.
 
-**Use your own domain.** In the Cloudflare dashboard, open **Workers & Pages → csharp-coding-questions → Custom domains → Set up a custom domain**,
-and enter a subdomain such as `questions.yourdomain.com`.
-If your domain's DNS is on Cloudflare, the record is created for you. If not, add a `CNAME` record `questions → csharp-coding-questions.pages.dev` at your DNS provider.
+**Use your own domain.** The domain must be added to your Cloudflare account (its DNS managed by Cloudflare). Then either:
 
-To update the site later, run the `--export` and `pages deploy` commands again.
-The static site shows the results captured at export time. Parallelism timings are a snapshot of that run, while `dotnet run` shows live results.
+- open **Workers & Pages → csharp-coding-questions → Settings → Domains & Routes → Add → Custom domain** and enter a subdomain such as `questions.yourdomain.com`, or
+- add `"routes": [{ "pattern": "questions.yourdomain.com", "custom_domain": true }]` to `wrangler.jsonc` and run `npx wrangler deploy`.
+
+Cloudflare creates the DNS record and the HTTPS certificate for you.
+
+The hosted site shows the results captured at export time. Parallelism timings are a snapshot of that run, while `dotnet run` shows live results.
 
 ## Project structure
 

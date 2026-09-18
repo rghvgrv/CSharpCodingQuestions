@@ -1,0 +1,10 @@
+// Cloudflare deployment of the static site (static assets only, no server code).
+// Update the site:  dotnet run -- --export  then  npx wrangler deploy
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "csharp-coding-questions",
+  "compatibility_date": "2026-09-18",
+  "assets": {
+    "directory": "site"
+  }
+}
