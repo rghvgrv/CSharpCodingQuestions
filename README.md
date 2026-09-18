@@ -1,5 +1,11 @@
 # C# Coding Questions
 
+[![Deploy to Cloudflare](https://github.com/rghvgrv/CSharpCodingQuestions/actions/workflows/deploy.yml/badge.svg)](https://github.com/rghvgrv/CSharpCodingQuestions/actions/workflows/deploy.yml)
+
+### 🌐 Live site: **[csharp-coding-questions.gauravaashish1.workers.dev](https://csharp-coding-questions.gauravaashish1.workers.dev)**
+
+Open it on your phone or computer. Nothing to install.
+
 **198 coding questions covering Data Structures & Algorithms, Trees and Parallel Programming, all solved in C#, explained step by step for beginners, in a web app you can use on your phone or desktop.**
 
 Every question shows several solutions **from the worst to the best**, with their time and space complexity, so you learn *why* the fast solution is fast, not just what it is.
