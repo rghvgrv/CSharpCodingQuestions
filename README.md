@@ -110,7 +110,10 @@ npx wrangler login              # one time: sign in to Cloudflare in the browser
 npx wrangler deploy             # uploads ./site
 ```
 
-To update the site later, run `dotnet run -- --export` and `npx wrangler deploy` again. Only changed files are uploaded.
+**Automatic deploys.** Every push or merged pull request to `master` runs [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). It builds the app, runs every question (a wrong answer stops the deploy), exports the site and deploys it to Cloudflare. Pull requests are built and verified but not deployed.
+The workflow needs two repository secrets: `CLOUDFLARE_API_TOKEN` (created from the **Edit Cloudflare Workers** token template) and `CLOUDFLARE_ACCOUNT_ID`.
+
+To deploy by hand instead, run `dotnet run -- --export` and `npx wrangler deploy`. Only changed files are uploaded.
 
 **Use your own domain.** The domain must be added to your Cloudflare account (its DNS managed by Cloudflare). Then either:
 
