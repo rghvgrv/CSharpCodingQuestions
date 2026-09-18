@@ -12,7 +12,6 @@
   },
   // Custom domains: Cloudflare creates the DNS records and HTTPS certificates.
   "routes": [
-    { "pattern": "rghvgrv.live", "custom_domain": true },
-    { "pattern": "www.rghvgrv.live", "custom_domain": true }
+    { "pattern": "csharpquestions.rghvgrv.live", "custom_domain": true }
   ]
 }

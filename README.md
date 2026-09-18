@@ -2,7 +2,7 @@
 
 [![Deploy to Cloudflare](https://github.com/rghvgrv/CSharpCodingQuestions/actions/workflows/deploy.yml/badge.svg)](https://github.com/rghvgrv/CSharpCodingQuestions/actions/workflows/deploy.yml)
 
-### 🌐 Live site: **[rghvgrv.live](https://rghvgrv.live)**
+### 🌐 Live site: **[csharpquestions.rghvgrv.live](https://csharpquestions.rghvgrv.live)**
 
 Open it on your phone or computer. Nothing to install.
 
@@ -104,7 +104,7 @@ The command prints `198/198 passed` and exits with a non-zero code if anything i
 
 ## Deploy to Cloudflare (free, always online)
 
-**Live site:** https://rghvgrv.live (also https://www.rghvgrv.live and https://csharp-coding-questions.gauravaashish1.workers.dev)
+**Live site:** https://csharpquestions.rghvgrv.live (backup address: https://csharp-coding-questions.gauravaashish1.workers.dev)
 
 Cloudflare serves the app as a static site (Cloudflare Workers static assets, the successor of Cloudflare Pages), so export it first.
 Every question runs once, and its result is saved as JSON next to the React app. `wrangler.jsonc` tells Cloudflare to serve the `site` folder.
