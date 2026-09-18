@@ -1,3 +1,4 @@
+using CSharpCodingQuestions.Api;
 using CSharpCodingQuestions.Core;
 
 ConsoleCapture.Install();
@@ -7,58 +8,30 @@ if (args.Contains("--check"))
     return QuestionChecker.CheckAll();
 }
 
+if (args.Contains("--export"))
+{
+    return StaticSiteExporter.Export(outputFolder: "site");
+}
+
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-app.MapGet("/api/catalog", () => new
-{
-    Sections = QuestionCatalog.Topics
-        .GroupBy(topic => topic.SectionTitle)
-        .Select(section => new
-        {
-            Title = section.Key,
-            Topics = section.Select(topic => new
-            {
-                topic.Id,
-                topic.Title,
-                topic.Summary,
-                Questions = QuestionCatalog.Questions
-                    .Where(question => question.Topic == topic)
-                    .Select(question => new { question.Id, question.Number, question.Title, Level = question.Level.ToString() }),
-            }),
-        }),
-});
+// Same URLs as the static export (site/data/...), so one UI works both live and on a static host.
+app.MapGet("/data/catalog.json", ApiResponses.Catalog);
 
-app.MapGet("/api/topics/{section}/{topic}", (string section, string topic) =>
+app.MapGet("/data/topics/{section}/{topic}.json", (string section, string topic) =>
 {
     TopicInfo? found = QuestionCatalog.Topics.FirstOrDefault(item => item.Id.Equals($"{section}/{topic}", StringComparison.OrdinalIgnoreCase));
-    return found == null ? Results.NotFound() : Results.Ok(new { found.Id, found.SectionTitle, found.Title, found.Body });
+    return found == null ? Results.NotFound() : Results.Ok(ApiResponses.Topic(found));
 });
 
-app.MapGet("/api/questions/{id}", (string id) =>
-{
-    if (!QuestionCatalog.ById.TryGetValue(id, out QuestionInfo? question))
-    {
-        return Results.NotFound();
-    }
-
-    QuestionResult result = QuestionRunner.GetResult(question);
-    return Results.Ok(new
-    {
-        question.Id,
-        question.Number,
-        question.Title,
-        Level = question.Level.ToString(),
-        question.Problem,
-        Topic = new { question.Topic.Id, question.Topic.Title, question.Topic.SectionTitle },
-        question.SharedCode,
-        Approaches = question.Approaches.Select(approach => new { approach.Name, approach.Time, approach.Space, approach.Idea, approach.Code }),
-        Result = new { result.Examples, result.Text, result.Errors },
-    });
-});
+app.MapGet("/data/questions/{id}.json", (string id) =>
+    QuestionCatalog.ById.TryGetValue(id, out QuestionInfo? question)
+        ? Results.Ok(ApiResponses.Question(question))
+        : Results.NotFound());
 
 app.MapFallbackToFile("index.html");
 app.Run();

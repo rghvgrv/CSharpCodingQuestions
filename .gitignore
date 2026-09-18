@@ -484,3 +484,6 @@ $RECYCLE.BIN/
 # Built React UI (dotnet build regenerates it)
 wwwroot/
 web/node_modules/
+
+# Static export for Cloudflare Pages (dotnet run -- --export)
+site/

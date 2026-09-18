@@ -9,7 +9,7 @@ export default function QuestionPage({ questionId, allQuestions }) {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    getJson(`/api/questions/${questionId}`).then(setQuestion).catch(e => setError(e.message))
+    getJson(`data/questions/${questionId}.json`).then(setQuestion).catch(e => setError(e.message))
   }, [questionId])
 
   if (error) return <div className="page error">Question not found.</div>

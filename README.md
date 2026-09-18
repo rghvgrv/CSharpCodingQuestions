@@ -96,11 +96,32 @@ The command prints `198/198 passed` and exits with a non-zero code if anything i
 > **Windows tip:** if Smart App Control / Application Control blocks the newly built `CSharpCodingQuestions.exe`,
 > run the DLL instead: `dotnet bin/Debug/net10.0/CSharpCodingQuestions.dll` (add `--check` to verify).
 
+## Deploy to Cloudflare Pages (free, always online)
+
+Cloudflare Pages hosts static files, so export the site first. Every question runs once, and its result is saved as JSON next to the React app:
+
+```bash
+dotnet build
+dotnet run -- --export          # writes the whole site to ./site (≈ 1 MB)
+npx wrangler login              # one time: sign in to Cloudflare in the browser
+npx wrangler pages deploy site --project-name csharp-coding-questions --branch main
+```
+
+The site is now live at `https://csharp-coding-questions.pages.dev`.
+
+**Use your own domain.** In the Cloudflare dashboard, open **Workers & Pages → csharp-coding-questions → Custom domains → Set up a custom domain**,
+and enter a subdomain such as `questions.yourdomain.com`.
+If your domain's DNS is on Cloudflare, the record is created for you. If not, add a `CNAME` record `questions → csharp-coding-questions.pages.dev` at your DNS provider.
+
+To update the site later, run the `--export` and `pages deploy` commands again.
+The static site shows the results captured at export time. Parallelism timings are a snapshot of that run, while `dotnet run` shows live results.
+
 ## Project structure
 
 ```
 CSharpCodingQuestions/
-├── Program.cs                     Web API (/api/catalog, /api/topics/…, /api/questions/…) and --check
+├── Program.cs                     Web server (/data/*.json), --check and --export
+├── Api/                           JSON responses + static exporter for Cloudflare Pages
 ├── Core/                          One type per file
 │   ├── QuestionAttribute.cs       [Question(Order, Title, Level, Problem)]
 │   ├── ApproachAttribute.cs       [Approach(Name, Time, Space, Idea)]

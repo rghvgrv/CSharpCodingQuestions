@@ -8,7 +8,7 @@ export default function TopicPage({ topicId, catalog }) {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    getJson(`/api/topics/${topicId}`).then(setTopic).catch(e => setError(e.message))
+    getJson(`data/topics/${topicId}.json`).then(setTopic).catch(e => setError(e.message))
   }, [topicId])
 
   const questions = catalog.sections.flatMap(s => s.topics).find(t => t.id === topicId)?.questions ?? []

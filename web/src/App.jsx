@@ -12,7 +12,7 @@ export default function App() {
   const route = useRoute()
 
   useEffect(() => {
-    getJson('/api/catalog').then(setCatalog).catch(e => setError(e.message))
+    getJson('data/catalog.json').then(setCatalog).catch(e => setError(e.message))
   }, [])
 
   useEffect(() => {
