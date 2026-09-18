@@ -42,6 +42,7 @@ public static class QuestionCatalog
                 Level: item.Attribute.Level,
                 Problem: item.Attribute.Problem,
                 Topic: item.Topic,
+                SharedCode: ApproachSource.SharedCode(ReadSource(item.Type, item.Topic)),
                 Approaches: LoadApproaches(item.Type, item.Topic),
                 Type: item.Type))
             .ToList();
@@ -54,6 +55,8 @@ public static class QuestionCatalog
             ?? throw new InvalidOperationException($"{type.Name}: topic '{topicId}' is not listed in Curriculum.Topics.");
     }
 
+    static string ReadSource(Type type, TopicInfo topic) => ResourceFiles.Read($"{topic.Id}/{type.Name}.cs");
+
     static List<ApproachInfo> LoadApproaches(Type type, TopicInfo topic)
     {
         var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Static)
@@ -64,7 +67,7 @@ public static class QuestionCatalog
             .Where(item => item.Attribute != null)
             .ToDictionary(item => item.Attribute!.Name);
 
-        var snippets = ApproachSource.Split(ResourceFiles.Read($"{topic.Id}/{type.Name}.cs"));
+        var snippets = ApproachSource.Split(ReadSource(type, topic));
         if (snippets.Count == 0 || snippets.Count != byName.Count)
         {
             throw new InvalidOperationException($"{type.Name}: found {snippets.Count} approach snippets but {byName.Count} [Approach] attributes.");

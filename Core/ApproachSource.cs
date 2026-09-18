@@ -40,6 +40,24 @@ public static partial class ApproachSource
         return snippets;
     }
 
+    /// <summary>
+    /// Code between the class's opening brace and the first [Approach], such as a helper that simulates a slow web call.
+    /// Empty when there is none.
+    /// </summary>
+    public static string SharedCode(string source)
+    {
+        Match firstApproach = ApproachStart().Match(source);
+        int classStart = source.IndexOf("public static class", StringComparison.Ordinal);
+        int bodyStart = source.IndexOf('{', classStart) + 1;
+        if (!firstApproach.Success || firstApproach.Index <= bodyStart)
+        {
+            return "";
+        }
+
+        string code = source[bodyStart..firstApproach.Index];
+        return string.IsNullOrWhiteSpace(code) ? "" : Dedent(code);
+    }
+
     /// <summary>Removes the shared indentation and the blank lines around the code.</summary>
     static string Dedent(string code)
     {

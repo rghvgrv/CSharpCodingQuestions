@@ -49,6 +49,14 @@ export default function QuestionPage({ questionId, allQuestions }) {
           </div>
         )}
 
+        {question.sharedCode && (
+          <div className="card approach">
+            <div className="approach-head"><h3>Shared code</h3></div>
+            <p className="muted">Helpers used by the approaches below.</p>
+            <CodeBlock code={question.sharedCode} />
+          </div>
+        )}
+
         {question.approaches.map((approach, i) => (
           <div className="card approach" key={approach.name}>
             <div className="approach-head">

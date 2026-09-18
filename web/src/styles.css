@@ -133,7 +133,7 @@ th { color: var(--muted); font-weight: 600; }
 
 /* Code with Copy button */
 .code-block { position: relative; margin: 12px 0 0; }
-.code-block pre { margin: 0; padding: 16px; overflow-x: auto; border-radius: 10px; background: var(--code-background); font-size: 14px; line-height: 1.55; }
+.code-block pre { margin: 0; padding: 40px 16px 16px; overflow-x: auto; border-radius: 10px; background: var(--code-background); font-size: 14px; line-height: 1.55; }
 .copy-button {
   position: absolute; top: 8px; right: 8px; padding: 4px 12px; border: 1px solid #3a3f4b; border-radius: 8px;
   background: #22262f; color: #e6e7ee; font-size: 13px; cursor: pointer;

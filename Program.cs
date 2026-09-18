@@ -54,6 +54,7 @@ app.MapGet("/api/questions/{id}", (string id) =>
         Level = question.Level.ToString(),
         question.Problem,
         Topic = new { question.Topic.Id, question.Topic.Title, question.Topic.SectionTitle },
+        question.SharedCode,
         Approaches = question.Approaches.Select(approach => new { approach.Name, approach.Time, approach.Space, approach.Idea, approach.Code }),
         Result = new { result.Examples, result.Text, result.Errors },
     });

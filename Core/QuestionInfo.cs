@@ -1,6 +1,7 @@
 namespace CSharpCodingQuestions.Core;
 
 /// <param name="Number">Position in the whole learning path, starting at 1.</param>
+/// <param name="SharedCode">Helper code the approaches use (may be empty).</param>
 /// <param name="Approaches">From worst to best.</param>
 public sealed record QuestionInfo(
     int Number,
@@ -9,6 +10,7 @@ public sealed record QuestionInfo(
     Difficulty Level,
     string Problem,
     TopicInfo Topic,
+    string SharedCode,
     IReadOnlyList<ApproachInfo> Approaches,
     Type Type)
 {
