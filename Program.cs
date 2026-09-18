@@ -1,20 +1,10 @@
-using CodingQuestions;
+using CSharpCodingQuestions.Core;
 
-Console.SetOut(new RoutedConsole(Console.Out));
+ConsoleCapture.Install();
 
-// `dotnet run -- --check` runs every question and fails if any output has a ✗, a crash or a timeout.
 if (args.Contains("--check"))
 {
-    var bad = 0;
-    foreach (var q in Questions.All)
-    {
-        var (output, ms) = Questions.Run(q);
-        var ok = !output.Contains('✗') && !output.Contains("💥") && !output.Contains("⏱");
-        if (!ok) { bad++; Console.Error.WriteLine($"FAIL #{q.No} {q.Id}\n{output}"); }
-        else Console.Error.WriteLine($"ok   #{q.No} {q.Id} ({ms:0} ms)");
-    }
-    Console.Error.WriteLine($"{Questions.All.Length - bad}/{Questions.All.Length} passed");
-    return bad == 0 ? 0 : 1;
+    return QuestionChecker.CheckAll();
 }
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,24 +13,51 @@ var app = builder.Build();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-app.MapGet("/api/questions", () => Questions.All.Select(q => new
+app.MapGet("/api/catalog", () => new
 {
-    q.No, q.Id, q.Section, q.Topic, q.Title, Level = q.Level.ToString()
-}));
-
-app.MapGet("/api/questions/{id}", (string id) =>
-    Questions.ById.TryGetValue(id, out var q)
-        ? Results.Ok(new { q.No, q.Id, q.Section, q.Topic, q.Title, Level = q.Level.ToString(), q.Text, Source = Questions.ReadSource(q.Id) })
-        : Results.NotFound());
-
-app.MapPost("/api/questions/{id}/run", (string id) =>
-{
-    if (!Questions.ById.TryGetValue(id, out var q)) return Results.NotFound();
-    var (output, ms) = Questions.Run(q);
-    return Results.Ok(new { output, ms, cores = Environment.ProcessorCount });
+    Sections = QuestionCatalog.Topics
+        .GroupBy(topic => topic.SectionTitle)
+        .Select(section => new
+        {
+            Title = section.Key,
+            Topics = section.Select(topic => new
+            {
+                topic.Id,
+                topic.Title,
+                topic.Summary,
+                Questions = QuestionCatalog.Questions
+                    .Where(question => question.Topic == topic)
+                    .Select(question => new { question.Id, question.Number, question.Title, Level = question.Level.ToString() }),
+            }),
+        }),
 });
 
-app.MapGet("/api/helpers", () => Questions.ReadSource("Lib"));
+app.MapGet("/api/topics/{section}/{topic}", (string section, string topic) =>
+{
+    TopicInfo? found = QuestionCatalog.Topics.FirstOrDefault(item => item.Id.Equals($"{section}/{topic}", StringComparison.OrdinalIgnoreCase));
+    return found == null ? Results.NotFound() : Results.Ok(new { found.Id, found.SectionTitle, found.Title, found.Body });
+});
+
+app.MapGet("/api/questions/{id}", (string id) =>
+{
+    if (!QuestionCatalog.ById.TryGetValue(id, out QuestionInfo? question))
+    {
+        return Results.NotFound();
+    }
+
+    QuestionResult result = QuestionRunner.GetResult(question);
+    return Results.Ok(new
+    {
+        question.Id,
+        question.Number,
+        question.Title,
+        Level = question.Level.ToString(),
+        question.Problem,
+        Topic = new { question.Topic.Id, question.Topic.Title, question.Topic.SectionTitle },
+        Approaches = question.Approaches.Select(approach => new { approach.Name, approach.Time, approach.Space, approach.Idea, approach.Code }),
+        Result = new { result.Examples, result.Text, result.Errors },
+    });
+});
 
 app.MapFallbackToFile("index.html");
 app.Run();

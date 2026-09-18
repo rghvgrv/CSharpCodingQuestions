@@ -1,41 +1,49 @@
-namespace CodingQuestions.Dsa.Basics;
+namespace CSharpCodingQuestions.Questions.Dsa.Basics;
 
-[Q(1_01_02, "Palindrome Check", Easy,
-"Check whether a string reads the same forwards and backwards, ignoring case and non-alphanumeric characters. Also check whether an integer is a palindrome without converting it to a string.")]
+[Question(Order = 2, Title = "Palindrome Check", Level = Easy, Problem = """
+    A palindrome reads the same forwards and backwards, like `"racecar"` or `"Level"`.
+    Return `true` if the word is a palindrome. Upper and lower case count as the same letter.
+    """)]
 public static class PalindromeCheck
 {
-    // Time O(n), Space O(1): two pointers that skip characters we ignore.
-    public static bool IsPalindrome(string s)
+    [Approach(Name = "Reverse and Compare", Time = "O(n)", Space = "O(n)", Idea = """
+        Make a reversed copy of the word and check whether it equals the original.
+        Simple, but it builds a whole new string just to compare.
+        """)]
+    public static bool IsPalindromeByReversing(string word)
     {
-        int i = 0, j = s.Length - 1;
-        while (i < j)
+        string lower = word.ToLower();
+        char[] letters = lower.ToCharArray();
+        Array.Reverse(letters);
+        string reversed = new string(letters);
+        return lower == reversed;
+    }
+
+    [Approach(Name = "Two Pointers", Time = "O(n)", Space = "O(1)", Idea = """
+        Compare the first letter with the last, the second with the second-last, and so on.
+        Stop at the first mismatch. No copy is needed, so it uses no extra memory.
+        """)]
+    public static bool IsPalindromeWithTwoPointers(string word)
+    {
+        int left = 0;
+        int right = word.Length - 1;
+
+        while (left < right)
         {
-            if (!char.IsLetterOrDigit(s[i])) i++;
-            else if (!char.IsLetterOrDigit(s[j])) j--;
-            else if (char.ToLower(s[i++]) != char.ToLower(s[j--])) return false;
+            if (char.ToLower(word[left]) != char.ToLower(word[right]))
+            {
+                return false;
+            }
+            left++;
+            right--;
         }
         return true;
     }
 
-    // Time O(digits): rebuild the number backwards and compare.
-    public static bool IsPalindrome(int x)
-    {
-        if (x < 0) return false;
-        int original = x, reversed = 0;
-        while (x > 0)
-        {
-            reversed = reversed * 10 + x % 10;
-            x /= 10;
-        }
-        return original == reversed;
-    }
-
-    public static void Run()
-    {
-        Check("\"A man, a plan, a canal: Panama\"", IsPalindrome("A man, a plan, a canal: Panama"), true);
-        Check("\"race a car\"", IsPalindrome("race a car"), false);
-        Check("121", IsPalindrome(121), true);
-        Check("-121", IsPalindrome(-121), false);
-        Check("10", IsPalindrome(10), false);
-    }
+    public static Example[] Examples =>
+    [
+        new(["racecar"], true),
+        new(["Level"], true),
+        new(["hello"], false),
+    ];
 }

@@ -1,40 +1,71 @@
-namespace CodingQuestions.Dsa.Basics;
+namespace CSharpCodingQuestions.Questions.Dsa.Basics;
 
-[Q(1_01_05, "Fibonacci", Easy,
-"Return the nth Fibonacci number (F0 = 0, F1 = 1). Compare plain recursion, memoization and the iterative version.")]
+[Question(Order = 5, Title = "Fibonacci Number", Level = Easy, Problem = """
+    The Fibonacci sequence starts `0, 1` and each next number is the sum of the two before it:
+    `0, 1, 1, 2, 3, 5, 8, 13, …`. Return the `n`-th number (counting from 0).
+    """)]
 public static class Fibonacci
 {
-    // Time O(2^n): recomputes the same values again and again.
-    public static long Naive(int n) => n < 2 ? n : Naive(n - 1) + Naive(n - 2);
+    [Approach(Name = "Plain Recursion", Time = "O(2ⁿ)", Space = "O(n)", Idea = """
+        Directly follow the definition: `Fib(n) = Fib(n - 1) + Fib(n - 2)`.
 
-    // Time O(n), Space O(n): cache every answer (top-down DP).
-    public static long Memo(int n, Dictionary<int, long>? memo = null)
+        Very slow, because the same values are computed again and again. `Fib(40)` makes over 300 million calls.
+        """)]
+    public static long FibonacciRecursive(int n)
     {
-        memo ??= [];
-        if (n < 2) return n;
-        if (memo.TryGetValue(n, out var cached)) return cached;
-        return memo[n] = Memo(n - 1, memo) + Memo(n - 2, memo);
+        if (n < 2)
+        {
+            return n;
+        }
+        return FibonacciRecursive(n - 1) + FibonacciRecursive(n - 2);
     }
 
-    // Time O(n), Space O(1): keep only the last two values (bottom-up DP).
-    public static long Iterative(int n)
+    [Approach(Name = "Recursion + Memory (Memoization)", Time = "O(n)", Space = "O(n)", Idea = """
+        Same recursion, but save every answer in a dictionary the first time it's computed.
+        Next time the same `n` is asked for, return the saved answer. Each value is computed only once.
+        """)]
+    public static long FibonacciMemoized(int n)
     {
-        long a = 0, b = 1;
-        for (int i = 0; i < n; i++) (a, b) = (b, a + b);
-        return a;
+        return FibonacciWithMemory(n, new Dictionary<int, long>());
     }
 
-    public static void Run()
+    private static long FibonacciWithMemory(int n, Dictionary<int, long> memory)
     {
-        Check("First 10", Enumerable.Range(0, 10).Select(Iterative), [0L, 1, 1, 2, 3, 5, 8, 13, 21, 34]);
+        if (n < 2)
+        {
+            return n;
+        }
+        if (memory.ContainsKey(n))
+        {
+            return memory[n];
+        }
 
-        var sw = Stopwatch.StartNew();
-        Check("Naive(30)", Naive(30), 832040L);
-        Console.WriteLine($"  naive took {sw.ElapsedMilliseconds} ms");
-
-        sw.Restart();
-        Check("Memo(90)", Memo(90), 2880067194370816120L);
-        Check("Iterative(90)", Iterative(90), 2880067194370816120L);
-        Console.WriteLine($"  memo + iterative took {sw.Elapsed.TotalMilliseconds:0.###} ms");
+        long result = FibonacciWithMemory(n - 1, memory) + FibonacciWithMemory(n - 2, memory);
+        memory[n] = result;
+        return result;
     }
+
+    [Approach(Name = "Loop with Two Variables", Time = "O(n)", Space = "O(1)", Idea = """
+        Each number needs only the previous two, so keep just those two and slide forward `n` times.
+        Fast, and it uses no extra memory.
+        """)]
+    public static long FibonacciLoop(int n)
+    {
+        long previous = 0;
+        long current = 1;
+        for (int i = 0; i < n; i++)
+        {
+            long next = previous + current;
+            previous = current;
+            current = next;
+        }
+        return previous;
+    }
+
+    public static Example[] Examples =>
+    [
+        new([10], 55L),
+        new([1], 1L),
+        new([30], 832040L),
+    ];
 }

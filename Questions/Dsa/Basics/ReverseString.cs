@@ -1,26 +1,53 @@
-namespace CodingQuestions.Dsa.Basics;
+namespace CSharpCodingQuestions.Questions.Dsa.Basics;
 
-[Q(1_01_01, "Reverse a String", Easy,
-"Reverse a string without using built-in Reverse(). Show both the two-pointer swap and the recursive approach.")]
+[Question(Order = 1, Title = "Reverse a String", Level = Easy, Problem = """
+    Reverse a string: `"hello"` becomes `"olleh"`.
+    """)]
 public static class ReverseString
 {
-    // Time O(n), Space O(n) for the char array. Swap from both ends toward the middle.
-    public static string TwoPointer(string s)
+    [Approach(Name = "Add Characters One by One", Time = "O(n²)", Space = "O(n)", Idea = """
+        Walk from the last character to the first, adding each one to a new string.
+
+        Easy to read, but slow: a string can't be changed, so `result += letter` copies the whole string every time.
+        """)]
+    public static string ReverseByAdding(string text)
     {
-        var chars = s.ToCharArray();
-        for (int i = 0, j = chars.Length - 1; i < j; i++, j--)
-            (chars[i], chars[j]) = (chars[j], chars[i]);
-        return new string(chars);
+        string result = "";
+        for (int i = text.Length - 1; i >= 0; i--)
+        {
+            result += text[i];
+        }
+        return result;
     }
 
-    // Time O(n²) due to string concatenation. Shown to practice recursion, not for production.
-    public static string Recursive(string s) => s.Length <= 1 ? s : Recursive(s[1..]) + s[0];
-
-    public static void Run()
+    [Approach(Name = "Two Pointers", Time = "O(n)", Space = "O(n)", Idea = """
+        1. Copy the string into a `char[]`, which *can* be changed.
+        2. Put one pointer on the first character and one on the last.
+        3. Swap those two characters, then move both pointers one step toward the middle.
+        4. When the pointers meet, every character has been swapped. Turn the array back into a string.
+        """)]
+    public static string ReverseWithTwoPointers(string text)
     {
-        Check("TwoPointer(\"hello\")", TwoPointer("hello"), "olleh");
-        Check("TwoPointer(\"C# rocks\")", TwoPointer("C# rocks"), "skcor #C");
-        Check("TwoPointer(\"\")", TwoPointer(""), "");
-        Check("Recursive(\"abcde\")", Recursive("abcde"), "edcba");
+        char[] letters = text.ToCharArray();
+        int left = 0;
+        int right = letters.Length - 1;
+
+        while (left < right)
+        {
+            char temp = letters[left];
+            letters[left] = letters[right];
+            letters[right] = temp;
+
+            left++;
+            right--;
+        }
+        return new string(letters);
     }
+
+    public static Example[] Examples =>
+    [
+        new(["hello"], "olleh"),
+        new(["C# rocks"], "skcor #C"),
+        new(["a"], "a"),
+    ];
 }

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <DefaultItemExcludes>$(DefaultItemExcludes);web/**</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Question files and topic READMEs are embedded so the UI can show the exact code and text. -->
+    <EmbeddedResource Include="Questions/**/*.cs;Questions/**/*.md" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+    <Using Include="System.Text" />
+    <Using Include="System.Diagnostics" />
+    <Using Include="System.Collections.Concurrent" />
+    <Using Include="System.Threading.Channels" />
+    <Using Include="CSharpCodingQuestions.Core" />
+    <Using Include="CSharpCodingQuestions.Core.Difficulty" Static="true" />
+    <Using Include="CSharpCodingQuestions.Core.Output" Static="true" />
+  </ItemGroup>
+
+  <!-- First `dotnet run` builds the React UI into wwwroot. Rebuild UI: cd web && npm run build -->
+  <Target Name="BuildWeb" BeforeTargets="Build" Condition="!Exists('wwwroot/index.html')">
+    <Exec WorkingDirectory="web" Command="npm install" />
+    <Exec WorkingDirectory="web" Command="npm run build" />
+  </Target>
+
+</Project>
